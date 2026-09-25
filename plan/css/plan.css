@@ -15,7 +15,7 @@
 .pl-stage[data-tool="select"] .pl-svg [data-kind="wall"], .pl-stage[data-tool="select"] .pl-svg [data-kind="room"] { cursor: pointer; }
 .pl-svg [data-kind="handle"] { cursor: grab; }
 
-.pl-hint { position: absolute; top: 10px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 24px); background: var(--text); color: var(--bg); font-size: 13px; padding: 7px 14px; border-radius: 999px; box-shadow: var(--shadow); pointer-events: none; text-align: center; }
+.pl-hint { position: absolute; bottom: 60px; left: 50%; transform: translateX(-50%); max-width: calc(100% - 24px); background: var(--text); color: var(--bg); font-size: 13px; padding: 7px 14px; border-radius: 999px; box-shadow: var(--shadow); pointer-events: none; text-align: center; }
 .pl-zoom { position: absolute; right: 10px; bottom: 10px; display: flex; gap: 6px; align-items: center; }
 .pl-zoom .icon-btn { width: 38px; height: 38px; }
 .pl-zoom-pct { min-width: 64px; height: 38px; border-radius: 999px; border: 0; background: var(--surface); box-shadow: var(--shadow); font-size: 13px; font-weight: 600; font-variant-numeric: tabular-nums; }

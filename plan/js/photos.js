@@ -97,6 +97,7 @@ function fmtDate(iso, withTime = false) {
   try { return new Intl.DateTimeFormat(loc, withTime ? { dateStyle: 'medium', timeStyle: 'short' } : { dateStyle: 'medium' }).format(d); } catch { return d.toLocaleString(); }
 }
 const pct = (z) => `${Math.round(z * 100)}${lang() === 'fr' ? ' %' : '%'}`;
+const localISO = (d) => { const z = (n) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${z(d.getMonth() + 1)}-${z(d.getDate())}T${z(d.getHours())}:${z(d.getMinutes())}:${z(d.getSeconds())}`; };
 const normDeg = (d) => ((Math.round(d) % 360) + 360) % 360;
 
 // room name lookup, memoised per plan snapshot
@@ -222,7 +223,7 @@ export async function addPhotoFiles(files, at) {
     recs.push({
       id, name: (f.name || T('untitled')).replace(/\.[a-z0-9]+$/i, '').slice(0, 60) || T('untitled'),
       x: +(base.x + off).toFixed(3), y: +(base.y + off).toFixed(3), dir: 0, fov: 70,
-      note: '', taken: new Date(f.lastModified || Date.now()).toISOString().slice(0, 19), marks: [],
+      note: '', taken: localISO(new Date(f.lastModified || Date.now())), marks: [],
     });
   }
   store.commit(t('addPhoto'), (plan) => { plan.photos.push(...recs); });
@@ -318,7 +319,7 @@ export function createPhotoView(container) {
   info.innerHTML = `
     <div class="pv-grab" aria-hidden="true"></div>
     <label class="pv-field"><span data-tx="name">${esc(t('name'))}</span><input class="pv-in-name" type="text" maxlength="80"></label>
-    <label class="pv-field"><span data-tx="note">${esc(t('note'))}</span><textarea class="pv-in-note" rows="3"></textarea></label>
+    <label class="pv-field"><span data-tx="note">${esc(t('note'))}</span><textarea class="pv-in-note" rows="2"></textarea></label>
     <dl class="pv-meta">
       <div class="pv-wide"><dt data-tx="taken">${esc(T('taken'))}</dt><dd class="pv-m-date"></dd></div>
       <div><dt data-tx="room">${esc(t('room'))}</dt><dd class="pv-m-room"></dd></div>
