@@ -9,7 +9,7 @@ describes what the current screen does. Second, it points to working implementat
 | Deliverable | Where | What it is |
 |---|---|---|
 | Web **Plan Studio** | `plan/` (open `plan/index.html`) | A complete working reference: zoomable plan, full dimensioning, editor, object library, 3D model, photo viewer, summary/take-off, JSON/SVG/PNG/CSV export. Runs offline. |
-| **SwiftUI port** | `ios-reference/` (Swift package `MR3DPlanKit`) | Drop-in iOS 17 code: same data model, algorithms and views, RoomPlan import. It was written without a Swift compiler, so expect small compile fixes. |
+| **SwiftUI port** | `ios-reference/` (Swift package `MR3DPlanKit`) | Drop-in iOS 17 code: same data model, algorithms and views, RoomPlan import. The core (model, geometry, units, editor model) compiles and passes 48 tests, including a JSON round trip with the web studio. The SwiftUI, SceneKit and RoomPlan files were only syntax-checked, so expect small fixes on the first Xcode build. |
 | Shared file format | `*.mr3dfloor.json` | The same JSON on the web and on iOS, so a plan can move between the two. |
 
 ---
