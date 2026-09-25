@@ -750,7 +750,7 @@ export function createPlanView(container) {
   let inspectorFocus = null;
   function focusInspectorField(name) { inspectorFocus = name; renderInspector(); }
 
-  const lenField = (key, label, value, opts = {}) => `<label class="fld"><span>${label}</span><input class="num" data-len="${key}" value="${fmtLen(value, { forceM: true })}" inputmode="decimal" ${opts.ro ? 'readonly' : ''} autocomplete="off" enterkeyhint="done"></label>`;
+  const lenField = (key, label, value, opts = {}) => `<label class="fld"><span>${label}</span><input class="num" data-len="${key}" value="${escAttr(fmtLen(value, { forceM: true }))}" inputmode="decimal" ${opts.ro ? 'readonly' : ''} autocomplete="off" enterkeyhint="done"></label>`;
   const txtField = (key, label, value) => `<label class="fld"><span>${label}</span><input data-txt="${key}" value="${escAttr(value)}" autocomplete="off" enterkeyhint="done"></label>`;
   const numField = (key, label, value, suffix = '') => `<label class="fld"><span>${label}</span><div class="with-suffix"><input class="num" data-num="${key}" value="${value}" inputmode="decimal" autocomplete="off"><em>${suffix}</em></div></label>`;
   const stat = (label, value) => `<div class="stat"><span>${label}</span><b>${value}</b></div>`;
@@ -938,7 +938,27 @@ export function createPlanView(container) {
     schedule(true);
     if (!ev?.live) renderInspector();
   });
-  store.on('select', () => { schedule(true); renderInspector(); });
+  store.on('select', () => { schedule(true); renderInspector(); keepSelectionVisible(); });
+
+  /** On phones the inspector is a bottom sheet: pan so the selection stays above it. */
+  function keepSelectionVisible() {
+    const sel = store.selection;
+    if (!sel || window.innerWidth > 760 || drag) return;
+    const plan = store.plan;
+    let p = null;
+    if (sel.kind === 'object') p = plan.objects.find((x) => x.id === sel.id);
+    else if (sel.kind === 'photo') p = plan.photos.find((x) => x.id === sel.id);
+    else if (sel.kind === 'note' || sel.kind === 'room') p = plan[sel.kind + 's'].find((x) => x.id === sel.id);
+    else if (sel.kind === 'opening') { const o = plan.openings.find((x) => x.id === sel.id); if (o) p = M.openingGeom(plan, o).center; }
+    else if (sel.kind === 'wall') { const w = M.wallById(plan, sel.id); if (w) p = G.lerp(...M.wallEnds(plan, w), 0.5); }
+    if (!p) return;
+    const q = vp.toScreen(p);
+    const visibleBottom = vp.h * 0.5 - 20;
+    if (q.y > 40 && q.y < visibleBottom) return;
+    const from = vp.snapshot();
+    vp.ty += vp.h * 0.28 - q.y;
+    const to = vp.snapshot(); vp.restore(from); animateTo(from, to, 260);
+  }
   store.on('settings', () => { info = null; schedule(true); renderInspector(); buildToolbar(); if (!library.hidden) buildLibrary(libSearch.value); });
 
   buildToolbar();

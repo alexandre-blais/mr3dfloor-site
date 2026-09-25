@@ -254,6 +254,7 @@ export function createModelView(container) {
     wall: () => mat('#f1eee8', { roughness: 0.9 }),
     wallCap: () => mat('#3c3c42', { roughness: 0.9 }),
     wallSel: () => mat('#f1eee8', { roughness: 0.9, emissive: theme.sel, emissiveIntensity: 0.28 }),
+    wallCapSel: () => mat('#3c3c42', { roughness: 0.9, emissive: theme.sel, emissiveIntensity: 0.55 }),
     leaf: () => mat('#e9e2d6', { roughness: 0.6 }),
     wood: () => mat('#8b6a4c', { roughness: 0.7 }),
   };
@@ -491,7 +492,7 @@ export function createModelView(container) {
       bx(g, mat(col, { roughness: 0.35 }), -w / 2, w / 2, 0, h - 0.1, -d / 2, d / 2);
       bx(g, mat(shade(col, 0.9), { roughness: 0.35 }), -w / 2, w / 2, h - 0.1, h, -d / 2, d / 2);
       bx(g, M_.darkGlass(), -w * 0.25, w * 0.15, h - 0.075, h - 0.03, d / 2, d / 2 + 0.004);
-      cy(g, M_.chrome(), w * 0.35, d / 2 + 0.01, 0.05, 0.05, h - 0.07, h - 0.03, true).rotation.x = 0;
+      cy(g, M_.chrome(), w * 0.35, d / 2 + 0.01, 0.05, 0.05, h - 0.07, h - 0.03, true);
       const r = Math.min(w, h) * 0.34, yc = (h - 0.1) * 0.5;
       const ring = cy(g, M_.chrome(), 0, 0, 2 * r, 2 * r, 0, 0.03);
       ring.rotation.x = Math.PI / 2; ring.position.set(0, yc, d / 2 + 0.015);
@@ -793,7 +794,7 @@ export function createModelView(container) {
         const hz = sw * (T / 2);
         const m = mesh(UNIT.box, leafM);
         m.scale.set(lw, leafH, lt);
-        m.position.set(hingeS + ox * lw / 2 - oz * 0 , leafH / 2 + 0.005, hz + oz * lw / 2);
+        m.position.set(hingeS + ox * lw / 2, leafH / 2 + 0.005, hz + oz * lw / 2);
         m.rotation.y = -Math.atan2(oz, ox);
         g.add(m);
         const hx = hingeS + ox * (lw - 0.07), hzz = hz + oz * (lw - 0.07);
@@ -890,8 +891,8 @@ export function createModelView(container) {
       if (s.kind === 'wall' && !m.userData.wallMesh) return;
       const orig = m.material;
       if (Array.isArray(orig)) {
-        const sm = M_.wallSel();
-        m.material = orig.map((x) => (x === M_.wall() ? sm : x));
+        const sm = M_.wallSel(), wm = M_.wall(), cm = M_.wallCap(), csm = M_.wallCapSel();
+        m.material = orig.map((x) => (x === wm ? sm : x === cm ? csm : x));
         v.restore.push([m, orig]);
         return;
       }
@@ -904,8 +905,6 @@ export function createModelView(container) {
     selVisuals.push(v);
     requestRender();
   }
-  // Array materials of walls are shared from matCache: restoring must not dispose them.
-  // (clearSelectionVisuals only disposes non-array replacement materials.)
 
   // ---------------------------------------------------------------- labels
   const _v = new THREE.Vector3();
@@ -1220,7 +1219,6 @@ export function createModelView(container) {
         if (view.mode === 'orbit') {
           let da = n.ang - pinch.ang; da = Math.atan2(Math.sin(da), Math.cos(da));
           orbit.theta -= da;
-          orbit.phi = G.clamp(orbit.phi - (n.my - pinch.my) * 0, 0.08, 1.48);
           applyCamera();
         }
       }
@@ -1395,7 +1393,5 @@ export function createModelView(container) {
       pointers.clear(); gest = null; pinch = null;
     },
     resize,
-    // Test hook (not part of the public contract).
-    _debug: { orbit, topv, walk, view, setMode, applyCamera },
   };
 }
