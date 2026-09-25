@@ -9,8 +9,7 @@ describes what the current screen does. Second, it points to working implementat
 | Deliverable | Where | What it is |
 |---|---|---|
 | Web **Plan Studio** | `plan/` (open `plan/index.html`) | A complete working reference: zoomable plan, full dimensioning, editor, object library, 3D model, photo viewer, summary/take-off, JSON/SVG/PNG/CSV export. Runs offline. |
-| **SwiftUI port** | `ios-reference/` (Swift package `MR3DPlanKit`) | Drop-in iOS 17 code: same data model, algorithms and views, RoomPlan import. The core (model, geometry, units, editor model) compiles and passes 48 tests, including a JSON round trip with the web studio. The SwiftUI, SceneKit and RoomPlan files were only syntax-checked, so expect small fixes on the first Xcode build. |
-| Shared file format | `*.mr3dfloor.json` | The same JSON on the web and on iOS, so a plan can move between the two. |
+| **iOS app changes** | the app's private repository, branch `claude/3d-floor-plan-scanning-ljnsvz` | The same features built into MR 3D Floor itself: dimension lines, anchored zoom to 20×, plan symbols, added objects (shower…) in the plan editor, PDF and Model tab, and a zoomable swipeable photo viewer. Geometry host-tested; the SwiftUI parts still need a first Xcode build. |
 
 ---
 
@@ -60,26 +59,29 @@ describes what the current screen does. Second, it points to working implementat
 
 | # | Recommendation | Reference implementation |
 |---|---|---|
-| 1 | Pinch or wheel zoom anchored at the finger or cursor; pan; double-tap to zoom; "fit" button; zoom from ¼× to 40× the fitted scale; scale bar and adaptive grid. **Text and line weights stay the same size on screen while the geometry scales.** | `plan/js/planview.js` (`Viewport`); `ZoomablePlanView.swift` |
+| 1 | Pinch or wheel zoom anchored at the finger or cursor; pan; double-tap to zoom; "fit" button; zoom from ¼× to 40× the fitted scale; scale bar and adaptive grid. **Text and line weights stay the same size on screen while the geometry scales.** | `plan/js/planview.js` (`Viewport`); app: `FloorPlanView.swift` (anchored pinch to 20×, double-tap, zoom buttons) |
 | 2 | Every wall gets an **overall dimension** on its outside face, with extension lines and 45° ticks. Labels never render upside down and are hidden when they don't fit, then reappear as you zoom in. Overall width and depth are drawn on top and left. | `renderPlan` → `dimLine` |
 | 3 | Every wall with openings gets a second **chain dimension**: corner → opening edge → opening width → … → corner, colour-coded (blue windows, cyan doors). The inspector shows "From corner A" and "From corner B" and lets you **type either one** to move the opening precisely. | `model.wallChain`; inspector `opA/opB` |
 | 4 | **Inside or centreline** dimension mode. Inside mode subtracts half the thickness of each wall it meets, which gives the tape-measure length. Trim quantities use inside lengths. | `model.wallInsideLength` |
-| 5 | **Editor** tools: draw walls (angle snap, end-point and alignment snap, automatic T-junction and crossing splits so rooms stay closed), dividers, doors (single, double, sliding, pocket with hinge and swing flip), windows, openings, rooms (auto-detected closed faces, named by tapping), measure, notes, photo pins. Drag wall ends and move whole walls. Type exact lengths such as `3.52`, `3,52`, `352cm` or `11' 6"`. Undo and redo. | `plan/js/editor.js`, `model.js`; `PlanEditorModel.swift` |
-| 6 | **Object library** with 40+ items and architectural symbols: shower, 60" shower, neo-angle shower, bathtub, freestanding tub, toilet, vanity and double vanity, pedestal sink, bidet, kitchen items, laundry and mechanical, living, bedroom, dining and office, stairs, column. Searchable in French and English. New objects **snap against the nearest wall** with their back to it. Selecting an object shows **clearance dimensions to the surrounding walls**, for example "shower 32 cm from the wall". | `catalog.js`; `ObjectLibrary.swift`, `PlanSymbols.swift` |
-| 7 | Everything edited in the plan also appears in the **3D model**: walls with real openings, glass, door leaves, and a recognisable 3D mesh for each object type. The model has orbit, top and walk modes and a "cut walls" dollhouse view. | `plan/js/view3d.js`; `Model3DBuilder.swift` |
-| 8 | **Photo viewer**: zoom toward the cursor or pinch point, double-tap for 2.5×, pan clamped to the image edges, swipe to the next photo, filmstrip, rotate, full screen, info panel with a **mini-map showing where the photo was taken and its field-of-view cone**, "Show on plan", and **annotations** (arrow, pen, line, text) saved with the photo. | `plan/js/photos.js`; `PhotoViewer.swift` |
+| 5 | **Editor** tools: draw walls (angle snap, end-point and alignment snap, automatic T-junction and crossing splits so rooms stay closed), dividers, doors (single, double, sliding, pocket with hinge and swing flip), windows, openings, rooms (auto-detected closed faces, named by tapping), measure, notes, photo pins. Drag wall ends and move whole walls. Type exact lengths such as `3.52`, `3,52`, `352cm` or `11' 6"`. Undo and redo. | `plan/js/editor.js`, `model.js`; app: `PlanEditorView.swift` (existing wall editor + added objects) |
+| 6 | **Object library** with 40+ items and architectural symbols: shower, 60" shower, neo-angle shower, bathtub, freestanding tub, toilet, vanity and double vanity, pedestal sink, bidet, kitchen items, laundry and mechanical, living, bedroom, dining and office, stairs, column. Searchable in French and English. New objects **snap against the nearest wall** with their back to it. Selecting an object shows **clearance dimensions to the surrounding walls**, for example "shower 32 cm from the wall". | `catalog.js`; app: `AddedObjects.swift`, `AddedObjectLibrary.swift`, `PlanSymbols.swift` |
+| 7 | Everything edited in the plan also appears in the **3D model**: walls with real openings, glass, door leaves, and a recognisable 3D mesh for each object type. The model has orbit, top and walk modes and a "cut walls" dollhouse view. | `plan/js/view3d.js`; app: `AddedObjectNodes.swift` (added objects in the Model tab) |
+| 8 | **Photo viewer**: zoom toward the cursor or pinch point, double-tap for 2.5×, pan clamped to the image edges, swipe to the next photo, filmstrip, rotate, full screen, info panel with a **mini-map showing where the photo was taken and its field-of-view cone**, "Show on plan", and **annotations** (arrow, pen, line, text) saved with the photo. | `plan/js/photos.js`; app: `ZoomableImageView.swift`, `SurfacePhotoViewer` |
 | 9 | Room names and areas are drawn on the plan and shrink to fit small rooms. The trim line **wraps** instead of being cut off. | `studio.css .metrics` |
 | 10 | **Summary**: per-room area, perimeter, baseboard and paintable wall area; a **numbered door and window schedule** (P1, F3…) with wall, room, width, height, sill and both corner offsets; wall list; object counts; CSV export. | `plan/js/summary.js` |
 | 11 | Metric and imperial units (feet and inches to ½"), French and English, light and dark mode, phone and desktop layouts (the inspector becomes a bottom sheet on phones and keeps the selection in view). | `units.js`, `i18n.js`, `tokens.css` |
 
-## 4. Suggested order for the iOS app
+## 4. What the iOS app branch does
 
-1. **Zoom and pan plus full dimensions** (`ZoomablePlanView`). This needs no data model change and has the biggest visible impact.
-2. **Import from RoomPlan into `PlanDocument`** (`RoomPlanImport.swift`), and save the JSON next to each scan.
-3. **Editor and object library.** The shower, bathtub and vanity requests come from here.
-4. **Model tab from `PlanDocument`** (`Model3DBuilder`), so edits appear in 3D.
-5. **Photo viewer.**
-6. Existing exports (PDF, DXF, SVG, CSV) are generated from the edited `PlanDocument` rather than the raw scan.
+The app itself (private repository, branch `claude/3d-floor-plan-scanning-ljnsvz`,
+`docs/PLAN-UPGRADE-2026-09-25.md` there) now has:
+1. **Zoom**: pinch about the fingers up to 20×, double-tap to zoom in on a spot, and zoom buttons on the Plan tab.
+2. **Dimensions**: dimension lines on every wall and a chain for every door, window and opening, on screen and in the plan PDF. The trim line wraps instead of being clipped.
+3. **Symbols**: plan symbols for the scanned objects.
+4. **Added objects**: shower, tub, vanity and 22 more, added in the plan editor (new ✎ button on the Plan tab), drawn on the plan, in the PDF and in the Model tab.
+5. **Photos**: the wall and room photo viewer can be swiped, pinched and double-tapped.
+
+Still to do: the added objects are not yet counted in the Summary take-off or the CSV/DXF/SVG/FML exports.
 
 ## 5. Accuracy note
 

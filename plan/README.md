@@ -32,8 +32,8 @@ Shortcuts: ⌘Z / ⇧⌘Z (undo/redo), ⌫ (delete), ⌘D (duplicate), R (rotate
 (object library and plan symbols) · `js/planview.js` (renderer) · `js/editor.js` (Plan tab) ·
 `js/view3d.js` · `js/photos.js` · `js/summary.js` · `js/app.js`.
 
-The plan file format (`*.mr3dfloor.json`) is documented at the top of `js/model.js`. The Swift
-package in `../ios-reference/` reads and writes the same format.
+The plan file format (`*.mr3dfloor.json`) is documented at the top of `js/model.js`. The iOS
+app's own implementation of these features lives in the app's (private) repository.
 
 ## Tests
 
