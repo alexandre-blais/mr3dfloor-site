@@ -1,0 +1,185 @@
+/* 3D "Model" tab. The host container is position:relative and sized by the app layout. */
+.v3d {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  background: var(--bg);
+  font-family: var(--font);
+  color: var(--text);
+  -webkit-user-select: none;
+  user-select: none;
+}
+.v3d-canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+  touch-action: none;
+  outline: none;
+  cursor: grab;
+}
+.v3d-canvas:active { cursor: grabbing; }
+.v3d.is-walk .v3d-canvas { cursor: crosshair; }
+
+/* ---------------------------------------------------------------- toolbar */
+.v3d-bar {
+  position: absolute;
+  top: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px;
+  max-width: calc(100% - 16px);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  -webkit-backdrop-filter: saturate(1.6) blur(14px);
+  backdrop-filter: saturate(1.6) blur(14px);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  z-index: 3;
+}
+.v3d-seg {
+  display: flex;
+  background: var(--surface-3);
+  border-radius: var(--radius-s);
+  padding: 2px;
+}
+.v3d-seg button,
+.v3d-btn {
+  appearance: none;
+  border: 0;
+  margin: 0;
+  font: 600 13px/1 var(--font);
+  color: var(--text);
+  background: transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  -webkit-tap-highlight-color: transparent;
+}
+.v3d-seg button {
+  min-width: 52px;
+  height: 30px;
+  padding: 0 12px;
+  border-radius: calc(var(--radius-s) - 2px);
+  color: var(--text-2);
+}
+.v3d-seg button[aria-pressed="true"] {
+  background: var(--surface);
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.14);
+}
+.v3d-tools { display: flex; gap: 2px; }
+.v3d-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 0 10px;
+  border-radius: var(--radius-s);
+  font-weight: 500;
+  color: var(--text-2);
+}
+.v3d-btn svg { width: 18px; height: 18px; flex: none; }
+.v3d-btn:hover:not(:disabled),
+.v3d-seg button:hover:not([aria-pressed="true"]) { background: var(--accent-soft); color: var(--text); }
+.v3d-btn[aria-pressed="true"] { color: var(--accent); background: var(--accent-soft); }
+.v3d-btn:disabled { opacity: 0.35; cursor: default; }
+.v3d-seg button:focus-visible,
+.v3d-btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 1px; }
+
+@media (max-width: 720px) {
+  .v3d-btn span { display: none; }
+  .v3d-btn { width: 36px; padding: 0; justify-content: center; }
+  .v3d-seg button { min-width: 0; padding: 0 11px; }
+}
+@media (max-width: 340px) {
+  .v3d-bar { gap: 2px; }
+  .v3d-seg button { padding: 0 8px; }
+  .v3d-btn { width: 32px; }
+}
+
+/* ---------------------------------------------------------------- room labels */
+.v3d-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 1;
+}
+.v3d-labels[hidden] { display: none; }
+.v3d-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 3px 8px 4px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.12);
+  white-space: nowrap;
+  will-change: transform;
+  line-height: 1.2;
+}
+.v3d-label b { font-size: 12px; font-weight: 600; color: var(--text); }
+.v3d-label span { font-size: 11px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+
+/* ---------------------------------------------------------------- walk mode */
+.v3d-hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(14px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  max-width: calc(100% - 32px);
+  padding: 7px 12px;
+  font-size: 12px;
+  line-height: 1.35;
+  text-align: center;
+  color: var(--text-2);
+  background: color-mix(in srgb, var(--surface) 88%, transparent);
+  border: 1px solid var(--line);
+  border-radius: var(--radius-s);
+  box-shadow: var(--shadow);
+  pointer-events: none;
+  z-index: 2;
+}
+.v3d-hint[hidden], .v3d-joy[hidden] { display: none; }
+.v3d-joy {
+  position: absolute;
+  left: calc(20px + env(safe-area-inset-left, 0px));
+  bottom: calc(84px + env(safe-area-inset-bottom, 0px));
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+  background: color-mix(in srgb, var(--surface) 55%, transparent);
+  border: 1px solid var(--line);
+  box-shadow: var(--shadow);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  touch-action: none;
+  z-index: 2;
+}
+.v3d-joy-knob {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 46px;
+  height: 46px;
+  margin: -23px 0 0 -23px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+  pointer-events: none;
+}
+
+.v3d-nogl {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 24px;
+  text-align: center;
+  color: var(--text-2);
+  font-size: 14px;
+}

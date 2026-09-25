@@ -1,0 +1,53 @@
+/* Design tokens shared by every Studio view. Light by default, dark via prefers-color-scheme
+   unless the page forces a theme with <html data-theme="light|dark">. */
+:root {
+  --bg: #f2f2f5;
+  --surface: #ffffff;
+  --surface-2: #f7f7f9;
+  --surface-3: #ececf0;
+  --line: #dcdce2;
+  --text: #16161a;
+  --text-2: #5d5d66;
+  --text-3: #8e8e97;
+  --accent: #0071e3;
+  --accent-soft: rgba(0, 113, 227, 0.12);
+  --danger: #d9342b;
+  --wall: #141414;
+  --wall-fill: #2a2a2e;
+  --virtual: #8c8c94;
+  --window: #1f8fff;
+  --door: #00a3b4;
+  --dim: #55555d;
+  --dim-chain: #0a7fbf;
+  --room-fill: rgba(0, 113, 227, 0.035);
+  --room-fill-sel: rgba(0, 113, 227, 0.10);
+  --obj-fill: rgba(40, 170, 200, 0.14);
+  --obj-stroke: #2aa3bf;
+  --sel: #ff7a00;
+  --grid: rgba(0, 0, 0, 0.05);
+  --grid-major: rgba(0, 0, 0, 0.09);
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.10), 0 1px 3px rgba(0, 0, 0, 0.08);
+  --radius: 14px;
+  --radius-s: 9px;
+  --font: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", Roboto, "Helvetica Neue", sans-serif;
+  --mono: ui-monospace, "SF Mono", Menlo, Consolas, monospace;
+  color-scheme: light;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #0e0e10; --surface: #1c1c1f; --surface-2: #232327; --surface-3: #2c2c31; --line: #34343a;
+    --text: #f2f2f5; --text-2: #b0b0b8; --text-3: #7a7a84; --accent: #3d9bff; --accent-soft: rgba(61, 155, 255, 0.16);
+    --wall: #f0f0f2; --wall-fill: #e4e4e8; --virtual: #8a8a94; --window: #4db0ff; --door: #2fd0de; --dim: #b8b8c0; --dim-chain: #58b8f0;
+    --room-fill: rgba(61, 155, 255, 0.05); --room-fill-sel: rgba(61, 155, 255, 0.14);
+    --obj-fill: rgba(60, 190, 220, 0.14); --obj-stroke: #45bcd8; --grid: rgba(255, 255, 255, 0.04); --grid-major: rgba(255, 255, 255, 0.08);
+    --shadow: 0 6px 24px rgba(0, 0, 0, 0.5); color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #0e0e10; --surface: #1c1c1f; --surface-2: #232327; --surface-3: #2c2c31; --line: #34343a;
+  --text: #f2f2f5; --text-2: #b0b0b8; --text-3: #7a7a84; --accent: #3d9bff; --accent-soft: rgba(61, 155, 255, 0.16);
+  --wall: #f0f0f2; --wall-fill: #e4e4e8; --virtual: #8a8a94; --window: #4db0ff; --door: #2fd0de; --dim: #b8b8c0; --dim-chain: #58b8f0;
+  --room-fill: rgba(61, 155, 255, 0.05); --room-fill-sel: rgba(61, 155, 255, 0.14);
+  --obj-fill: rgba(60, 190, 220, 0.14); --obj-stroke: #45bcd8; --grid: rgba(255, 255, 255, 0.04); --grid-major: rgba(255, 255, 255, 0.08);
+  --shadow: 0 6px 24px rgba(0, 0, 0, 0.5); color-scheme: dark;
+}

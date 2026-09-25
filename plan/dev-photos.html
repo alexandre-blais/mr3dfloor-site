@@ -1,0 +1,10 @@
+<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>photos dev</title><link rel="stylesheet" href="css/tokens.css"><link rel="stylesheet" href="css/photos.css">
+<style>html,body{margin:0;height:100%;background:var(--bg)}#v{position:fixed;inset:0}</style></head>
+<body><div id="v"></div><script type="module">
+import { createPhotoView, addPhotoFiles } from './js/photos.js';
+import { store } from './js/store.js';
+const v = createPhotoView(document.getElementById('v')); v.activate();
+window.pv = v; window.store = store; window.addPhotoFiles = addPhotoFiles;
+store.on('navigate', (e) => { window.lastNav = e; });
+</script></body></html>

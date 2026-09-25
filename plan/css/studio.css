@@ -1,0 +1,109 @@
+/* App shell: header, tabs, metrics line, menus, summary tab, shared controls. */
+* { box-sizing: border-box; }
+html, body { height: 100%; margin: 0; }
+body { background: var(--bg); color: var(--text); font: 15px/1.4 var(--font); -webkit-font-smoothing: antialiased; overscroll-behavior: none; }
+button, input, select, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; }
+[hidden] { display: none !important; }
+.muted { color: var(--text-2); }
+.small { font-size: 13px; }
+
+.app { display: flex; flex-direction: column; height: 100dvh; height: 100vh; }
+@supports (height: 100dvh) { .app { height: 100dvh; } }
+
+/* ------------------------------------------------------------------ header */
+.top { display: flex; align-items: center; gap: 10px; padding: calc(8px + env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) 6px max(12px, env(safe-area-inset-left)); }
+.top .title { flex: 1; min-width: 0; text-align: center; }
+.plan-name { width: 100%; max-width: 420px; border: 0; background: transparent; text-align: center; font-weight: 650; font-size: 17px; padding: 3px 8px; border-radius: 8px; text-overflow: ellipsis; }
+.plan-name:hover { background: var(--surface-3); }
+.plan-name:focus { outline: 2px solid var(--accent); background: var(--surface); }
+.top .sub { font-size: 13px; font-weight: 600; color: var(--text); margin-top: 1px; font-variant-numeric: tabular-nums; }
+.top-actions { display: flex; gap: 6px; }
+.icon-btn { display: inline-grid; place-items: center; width: 40px; height: 40px; border-radius: 50%; border: 0; background: var(--surface); box-shadow: var(--shadow); color: var(--text); padding: 0; text-decoration: none; }
+.icon-btn:disabled { opacity: .4; cursor: default; }
+.icon-btn:not(:disabled):active { transform: scale(.94); }
+.top .more { color: var(--accent); }
+
+/* ------------------------------------------------------------------ tabs */
+.tabs { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); margin: 4px auto 0; width: min(560px, calc(100% - 24px)); background: var(--surface-3); border-radius: 12px; padding: 3px; }
+.tabs button { position: relative; z-index: 1; border: 0; background: transparent; padding: 7px 4px; font-weight: 550; font-size: 15px; border-radius: 9px; color: var(--text); }
+.tabs .tab-ind { position: absolute; z-index: 0; top: 3px; bottom: 3px; left: 0; border-radius: 9px; background: var(--surface); box-shadow: 0 1px 4px rgba(0,0,0,.12); transition: transform .25s cubic-bezier(.3,.7,.2,1), width .25s; }
+
+/* Metrics: wraps instead of being clipped (the current app truncates "Baseboard…") */
+.metrics { display: flex; flex-wrap: wrap; justify-content: center; gap: 2px 14px; padding: 8px 14px 4px; font-size: 12.5px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.metrics em { font-style: normal; color: var(--text-3); }
+.app:not([data-tab="plan"]):not([data-tab="summary"]) .metrics { display: none; }
+
+.views { flex: 1; min-height: 0; position: relative; }
+.view { position: absolute; inset: 0; overflow: hidden; }
+.view-summary { overflow: auto; -webkit-overflow-scrolling: touch; }
+.loading { display: grid; place-items: center; height: 100%; color: var(--text-3); font-size: 28px; }
+.err { padding: 24px; color: var(--danger); }
+
+/* ------------------------------------------------------------------ menu */
+.menu { position: fixed; z-index: 50; top: calc(56px + env(safe-area-inset-top)); right: max(12px, env(safe-area-inset-right)); width: min(310px, calc(100vw - 24px)); max-height: calc(100vh - 80px); overflow: auto; background: var(--surface); border-radius: var(--radius); box-shadow: var(--shadow); padding: 6px; border: 1px solid var(--line); }
+.menu-sec { padding: 4px 0; }
+.menu-sec + .menu-sec { border-top: 1px solid var(--line); }
+.menu h5 { margin: 6px 10px 4px; font-size: 11.5px; text-transform: uppercase; letter-spacing: .04em; color: var(--text-3); }
+.menu [role="menuitem"] { display: flex; align-items: center; gap: 10px; width: 100%; border: 0; background: none; padding: 9px 10px; border-radius: 8px; text-align: left; font-size: 14.5px; }
+.menu [role="menuitem"]:hover { background: var(--surface-3); }
+.menu [role="menuitem"] .ic { color: var(--accent); }
+.menu-seg { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 6px 10px; font-size: 14px; }
+
+/* segmented control */
+.seg { display: inline-flex; background: var(--surface-3); border-radius: 9px; padding: 2px; gap: 2px; }
+.seg.wrap { flex-wrap: wrap; }
+.seg button { border: 0; background: transparent; padding: 6px 10px; border-radius: 7px; font-size: 13px; font-weight: 550; }
+.seg button.is-on { background: var(--surface); box-shadow: 0 1px 3px rgba(0,0,0,.14); color: var(--accent); }
+
+.toast { position: fixed; left: 50%; bottom: calc(24px + env(safe-area-inset-bottom)); transform: translateX(-50%); background: var(--text); color: var(--bg); padding: 10px 16px; border-radius: 999px; font-size: 14px; z-index: 80; box-shadow: var(--shadow); }
+
+/* ------------------------------------------------------------------ buttons & fields (shared) */
+.btn { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--line); background: var(--surface); border-radius: 10px; padding: 8px 12px; font-size: 13.5px; font-weight: 550; min-height: 38px; }
+.btn:hover { background: var(--surface-2); }
+.btn.primary { background: var(--accent); border-color: var(--accent); color: #fff; }
+.btn.danger { color: var(--danger); }
+.fld { display: flex; flex-direction: column; gap: 4px; font-size: 12px; color: var(--text-2); min-width: 0; }
+.fld input, .fld select, .fld textarea { width: 100%; border: 1px solid var(--line); background: var(--surface-2); border-radius: 9px; padding: 8px 10px; font-size: 15px; color: var(--text); min-height: 38px; }
+.fld input:focus, .fld select:focus, .fld textarea:focus { outline: 2px solid var(--accent); outline-offset: -1px; background: var(--surface); }
+.fld input.num { font-variant-numeric: tabular-nums; }
+.fld input.bad { outline: 2px solid var(--danger); animation: shake .3s; }
+@keyframes shake { 25% { transform: translateX(-3px); } 75% { transform: translateX(3px); } }
+.with-suffix { position: relative; }
+.with-suffix em { position: absolute; right: 10px; top: 50%; transform: translateY(-50%); font-style: normal; color: var(--text-3); pointer-events: none; }
+
+/* ------------------------------------------------------------------ summary tab */
+.sum-wrap { max-width: 980px; margin: 0 auto; padding: 14px 14px calc(40px + env(safe-area-inset-bottom)); }
+.sum-head h2 { margin: 6px 0 0; font-size: 22px; }
+.sum-head p { margin: 2px 0 14px; color: var(--text-2); font-variant-numeric: tabular-nums; }
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 10px; margin-bottom: 14px; }
+.card { background: var(--surface); border-radius: var(--radius); padding: 14px; box-shadow: 0 1px 2px rgba(0,0,0,.05); border: 1px solid var(--line); }
+section.card { margin-bottom: 14px; }
+.card h3 { margin: 0 0 10px; font-size: 15px; }
+.stat-card { display: flex; flex-direction: column; gap: 2px; }
+.stat-card span { font-size: 12px; color: var(--text-2); }
+.stat-card b { font-size: 20px; font-variant-numeric: tabular-nums; }
+.stat-card small { color: var(--text-3); font-size: 12px; }
+.tbl-wrap { overflow-x: auto; margin: 0 -14px; padding: 0 14px; }
+.tbl { width: 100%; border-collapse: collapse; font-size: 13.5px; font-variant-numeric: tabular-nums; }
+.tbl th { text-align: left; font-weight: 600; color: var(--text-2); font-size: 12px; padding: 6px 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl td { padding: 8px; border-bottom: 1px solid var(--line); white-space: nowrap; }
+.tbl tbody tr { cursor: pointer; }
+.tbl tbody tr:hover { background: var(--accent-soft); }
+.tbl .n { text-align: right; }
+.tbl tfoot td { font-weight: 650; border-bottom: 0; }
+.mark { display: inline-block; min-width: 30px; text-align: center; padding: 1px 6px; border-radius: 6px; font-weight: 650; font-size: 12px; }
+.mark-win { background: color-mix(in srgb, var(--window) 16%, transparent); color: var(--window); }
+.mark-door { background: color-mix(in srgb, var(--door) 16%, transparent); color: var(--door); }
+.chips { display: flex; flex-wrap: wrap; gap: 8px; }
+.chip { display: inline-flex; gap: 8px; align-items: center; background: var(--surface-2); border: 1px solid var(--line); border-radius: 999px; padding: 5px 6px 5px 12px; font-size: 13px; }
+.chip b { background: var(--surface-3); border-radius: 999px; padding: 1px 8px; font-size: 12px; }
+.disclaimer { color: var(--text-3); font-size: 12.5px; text-align: center; margin-top: 18px; }
+
+@media (max-width: 520px) {
+  .top .sub { font-size: 12px; }
+  .tabs button { font-size: 14px; }
+}
+@media print {
+  .top, .tabs, .metrics, .menu { display: none !important; }
+}
